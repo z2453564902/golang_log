@@ -1,35 +1,42 @@
-package golang_log
+package journal
 
 import (
 	"io"
+	"log"
 	"os"
 	"time"
 )
 
 const (
-	//LOGPATH  LOGPATH/time.Now().Format(FORMAT)/*.log
-	LOGPATH = "log/"
 	//FORMAT .
 	FORMAT = "20060102"
 	//LineFeed 换行
 	LineFeed = "\r\n"
 )
 
-//以天为基准,存日志
-var path = LOGPATH + time.Now().Format(FORMAT) + "/"
+var (
+	// staticPath = PATHROOT + "/log/"
+	staticPath = "./"
+)
 
 //WriteLog return error
-func WriteLog(fileName, msg string) error {
-	if !IsExist(path) {
-		return CreateDir(path)
-	}
+func WriteLog(pathName, msg string) error {
 	var (
-		err error
-		f   *os.File
+		newPath  = staticPath
+		err      error
+		f        *os.File
+		fileName = pathName + ".log"
 	)
-
-	f, err = os.OpenFile(path+fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	_, err = io.WriteString(f, LineFeed+msg)
+	newPath = newPath + time.Now().Format(FORMAT) + "/"
+	if !IsExist(newPath) {
+		err = CreateDir(newPath)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	f, err = os.OpenFile(newPath+fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	_, err = io.WriteString(f, LineFeed+time.Now().Format("2006-01-02 15:04:05")+" "+msg)
 
 	defer f.Close()
 	return err
