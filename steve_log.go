@@ -19,6 +19,12 @@ var (
 	staticPath = "./"
 )
 
+func main(){
+	WriteLog("study_err","学习途中发生了点错误")
+}
+
+
+
 //WriteLog return error
 func WriteLog(pathName, msg string) error {
 	var (
